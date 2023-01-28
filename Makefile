@@ -1,13 +1,30 @@
-INCLUDE_PATH=source
-SOURCE_PATH=source
-TARGET_PATH=bin
+all: build
 
-EXECUTE_FILE=$(TARGET_PATH)/main
-SFML_CFLAGS=-l sfml-system -l sfml-window -l sfml-graphics -l sfml-audio
-TINYXMLFLAGS=-l tinyxml2
-all:
-	mkdir -p $(TARGET_PATH)
-	cp -r res $(TARGET_PATH)
-	g++ -o $(EXECUTE_FILE) $(SOURCE_PATH)/*.cpp -I $(INCLUDE_PATH) $(SFML_CFLAGS) $(TINYXMLFLAGS)
+mkdir_build:
+	rm -rf build
+	mkdir -p build
+
+build: mkdir_build
+	cd build; cmake ..
+	make -C build
+
+build_ninja: mkdir_build
+	cd build; cmake -GNinja ..
+	ninja -C build
+
+debug: mkdir_build
+	cd build; cmake -DCMAKE_BUILD_TYPE=Debug ..
+	make -C build
+
+debug_ninja: mkdir_build
+	cd build; cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ..
+	ninja -C build
+
+run:
+	cd build; ./uSuperMarioHD
+
+.PHONY: mkdir_build
+
 clean:
-	rm -rf $(TARGET_PATH)
+	rm -rf build
+	
