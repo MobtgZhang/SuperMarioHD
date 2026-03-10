@@ -163,7 +163,7 @@ void CMarioGame::popScene()
     m_current_scene->turnOn();
 
     updateMusic();
-}; 
+} 
 
 CMarioGUI* CMarioGame::GUI()
 {
@@ -241,6 +241,9 @@ void CMarioGame::setState(GameState state)
         updateMusic();
         break;
     }
+    case(GameState::level_over):
+    case(GameState::time_out):
+        break;
     }
 }
 
@@ -891,7 +894,7 @@ void CMarioGUI::update(int delta_time)
 
 }
 
-void CMarioGUI::postDraw(sf::RenderWindow* render_window)
+void CMarioGUI::postDraw(sf::RenderWindow* /* render_window */)
 {
 
 }

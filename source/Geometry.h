@@ -56,7 +56,7 @@ namespace std
 			return int(v.y) * 10000 + int(v.x);
 		}
 	};
-};
+}
 
 class Rect
 {

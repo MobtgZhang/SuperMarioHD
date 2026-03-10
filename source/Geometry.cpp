@@ -15,7 +15,7 @@ Vector rotateAnticlockwise(const Vector& direction)
 int getLength(const std::vector<Vector>& path)
 {
     int length = 0;
-    for (int i = 1; i < path.size(); ++i)
+    for (size_t i = 1; i < path.size(); ++i)
         length += (path[i] - path[i - 1]).length();
     return length;
 }

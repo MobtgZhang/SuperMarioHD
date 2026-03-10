@@ -749,7 +749,7 @@ void IMarioState::setMarioFirePallete()
 void  IMarioState::enableScene(bool value)
 {
 	auto m = mario();
-	mario()->getParent()->foreachObject([m, value](CGameObject* obj) {if (obj != m) if (value) obj->enable(); else  obj->disable(); });
+	mario()->getParent()->foreachObject([m, value](CGameObject* obj) { if (obj != m) { if (value) obj->enable(); else obj->disable(); } });
 }
 
 void  IMarioState::setMarioState(const MarioState& state)

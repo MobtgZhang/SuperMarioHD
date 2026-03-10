@@ -45,19 +45,19 @@ AbstractBlock::AbstractBlock(int id) :m_id(id)
 AbstractBlock::~AbstractBlock()
 {
 
-};
+}
 
-void AbstractBlock::draw(sf::RenderWindow* render_window)
-{
-
-};
-
-void AbstractBlock::update(int delta_time)
+void AbstractBlock::draw(sf::RenderWindow* /* render_window */)
 {
 
 }
 
-void AbstractBlock::kick(CMario* mario)
+void AbstractBlock::update(int /* delta_time */)
+{
+
+}
+
+void AbstractBlock::kick(CMario* /* mario */)
 {
 
 }
@@ -118,9 +118,9 @@ void CStaticBlock::draw(sf::RenderWindow* render_window)
 {
 	cur_sprite->setPosition(position*block_size);
 	render_window->draw(*cur_sprite);
-};
+}
 
-void CStaticBlock::kick(CMario* mario)
+void CStaticBlock::kick(CMario* /* mario */)
 {
 	MarioGame().playSound("bump");
 }
@@ -134,8 +134,8 @@ CBricksBlock::CBricksBlock():AbstractBlock(BRICK_TILE_CODE)
 void CBricksBlock::draw(sf::RenderWindow* render_window)
 {
 	m_sprite_sheet.setPosition(position*block_size + Vector::up*kicked_value);
-	m_sprite_sheet.draw(render_window);		 
-};
+	m_sprite_sheet.draw(render_window);
+}
 
 void CBricksBlock::update(int delta_time)
 {
@@ -196,7 +196,7 @@ void CMoneyBox::draw(sf::RenderWindow* render_window)
 {
 	m_sprite_sheet.setPosition(position*block_size + Vector::up*kicked_value);
 	m_sprite_sheet.draw(render_window);
-};
+}
 
 void CMoneyBox::update(int delta_time)
 {
@@ -322,8 +322,6 @@ void CBlocks::draw(sf::RenderWindow* render_window)
 	if (m_night_view_filter)
 		sf::Shader::bind(&m_night_view_filter_shader);
 
-	Rect cameraRect = getParent()->castTo<CMarioGameScene>()->cameraRect();
-	const float block_size = blockSize().x;
 	Vector center = render_window->getView().getCenter();
 	Vector size = render_window->getView().getSize();
 	view_rect = Rect(toBlockCoordinates(center - size / 2), toBlockCoordinates(size)).getIntersection(Rect(0, 0, cols(), rows()));
@@ -595,7 +593,7 @@ void COneBrick::update(int delta_time)
 
 //-----------------------------------------------------------------------------------
 
-CTwistedCoin::CTwistedCoin(const Vector& pos, CMario* mario)
+CTwistedCoin::CTwistedCoin(const Vector& pos, CMario* /* mario */)
 {
 	setPosition(pos);
 	m_speed = Vector::up*0.05f;

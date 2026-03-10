@@ -147,7 +147,7 @@ public:
 	static void invokePreupdateActions();
 	virtual void start();
 	virtual void update(int delta_time);
-	virtual void events(const sf::Event& event) {};
+	virtual void events(const sf::Event&) {};
 	void enable();
 	void disable();
 	bool isEnabled() const;
@@ -169,7 +169,7 @@ protected:
 	virtual void onPropertySet(const std::string& name);
 	virtual void onPropertyGet(const std::string& name) const;
 	virtual void onActivated() {};
-	virtual void onPositionChanged(const Vector& new_pos, const Vector& old_pos) {};
+	virtual void onPositionChanged(const Vector&, const Vector&) {};
 private:
 	std::string m_name;
 	bool m_started = false;

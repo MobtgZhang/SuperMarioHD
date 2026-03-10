@@ -19,7 +19,7 @@ void CEnemy::checkNextTileUnderFoots()
 		bool is_next_under_foot = m_blocks->isCollidableBlock(m_blocks->toBlockCoordinates(own_center + 20*opposite_vector + 32*Vector::down));
 		bool is_prev_under_foot = m_blocks->isCollidableBlock(m_blocks->toBlockCoordinates(own_center - 60*opposite_vector + 32*Vector::down));
 		bool is_prev_back = m_blocks->isCollidableBlock(m_blocks->toBlockCoordinates(own_center - 50*opposite_vector));
-		bool is_next_back = m_blocks->isCollidableBlock(m_blocks->toBlockCoordinates(own_center + 50*opposite_vector));
+		(void)m_blocks->isCollidableBlock(m_blocks->toBlockCoordinates(own_center + 50*opposite_vector));  // is_next_back
 
 		if ((!is_next_under_foot && !is_prev_back) && (is_next_under_foot || is_prev_under_foot))
 			m_speed.x = -m_speed.x;
@@ -77,7 +77,7 @@ void CEnemy::start()
 	assert(m_mario && m_blocks);
 }
 
-void CEnemy::update(int delta_time)
+void CEnemy::update(int /* delta_time */)
 {
 	checkFallUndergound();
 }
@@ -145,18 +145,19 @@ void CGoomba::update(int delta_time)
 			m_animator.play("walk");
 			m_animator.update(delta_time);
 			break;
-		};
-		case(State::Cramped): { m_animator.play("cramped"); break; };
-		case(State::Died): { m_animator.play("fall"); break; };
+		}
+		case(State::Cramped): { m_animator.play("cramped"); break; }
+		case(State::Died): { m_animator.play("fall"); break; }
+		case(State::Deactivated): break;
 	}
 }
 
-void CGoomba::kickFromTop(CMario* mario)
+void CGoomba::kickFromTop(CMario* /* mario */)
 {
 	setState(State::Cramped);
 }
 
-void CGoomba::kickFromBottom(CMario* mario)
+void CGoomba::kickFromBottom(CMario* /* mario */)
 {
 	if (m_state != Died)
 	{
@@ -200,6 +201,7 @@ void CGoomba::setState(State state)
 			MarioGame().playSound("kick");
 			break;
 		}
+		case State::Deactivated: break;
 	}
 	m_timer = 0;
 }
@@ -222,6 +224,9 @@ void  CKoopa::kickFromTop(CMario* mario)
 {
 	switch (m_state)
 	{
+		case CKoopa::Deactivated:
+		case CKoopa::Died:
+			break;
 		case CKoopa::Levitating:
 		case CKoopa::Jumping:
 		{
@@ -258,7 +263,7 @@ void  CKoopa::kickFromTop(CMario* mario)
 	}
 }
 
-void  CKoopa::kickFromBottom(CMario* mario)
+void  CKoopa::kickFromBottom(CMario* /* mario */)
 {
 	if (m_state != State::Died)
 	{
@@ -353,6 +358,7 @@ void CKoopa::setState(State state)
 			m_animator.play("fall");
 			break;
 		}
+		case (State::Deactivated): break;
 		}
 		m_timer = 0;
 	}
@@ -366,12 +372,14 @@ void CKoopa::update(int delta_time)
 	{
 		Rect camera_rect = getParent()->castTo<CMarioGameScene>()->cameraRect();
         if (std::abs(getPosition().x - camera_rect.center().x) < camera_rect.width() / 2)
+		{
 			if (m_flying_mode == 1)
 				setState(State::Jumping);
 			else if (m_flying_mode == 2)
 				setState(State::Levitating);
 			else
 				setState(State::Normal);
+		}
 	}
 	else
 	{
@@ -385,10 +393,12 @@ void CKoopa::update(int delta_time)
 				m_speed.x = -m_speed.x;
 
 			if (m_collision_tag & ECollisionTag::floor)
+			{
 				if (m_state == State::Jumping)
 					m_speed.y = -0.4f;
 				else
 					m_speed.y = 0.f;
+			}
 			if (m_collision_tag & ECollisionTag::cell)
 				m_speed.y = 0;
 		}
@@ -430,6 +440,9 @@ void CKoopa::update(int delta_time)
 				checkCollideOtherCharasters();
 				break;
 			}
+			case(State::Deactivated):
+			case(State::Died):
+				break;
 		}
 	}
 
@@ -486,7 +499,7 @@ void  CBuzzyBeetle::kickFromTop(CMario* mario)
 	m_timer = 0;
 }
 
-void  CBuzzyBeetle::kickFromBottom(CMario* mario)
+void  CBuzzyBeetle::kickFromBottom(CMario* /* mario */)
 {
 	if (m_state != Died)
 	{
@@ -516,7 +529,7 @@ void CBuzzyBeetle::touchSide(CMario* mario)
 		mario->reciveDamage();
 }
 
-void CBuzzyBeetle::fired(CMario* mario)
+void CBuzzyBeetle::fired(CMario* /* mario */)
 {
 	//nothing happen
 }
@@ -556,6 +569,7 @@ void CBuzzyBeetle::setState(State state)
 		m_animator.play("fall");
 		break;
 	}
+	case (State::Deactivated): break;
 	}
 	m_timer = 0;
 }
@@ -666,7 +680,7 @@ void CHammer::update(int delta_time)
 		if (m_target->getBounds().isContain(getBounds().center()))
 			m_target->reciveDamage();
 	}
-};
+}
 
 void  CHammer::throwAway(const Vector& speed)
 {
@@ -820,12 +834,12 @@ void CHammerBro::onActivated()
 	m_jump_timer = rand() % int(jump_rate / 2);
 }
 
-void CHammerBro::kickFromTop(CMario* mario)
+void CHammerBro::kickFromTop(CMario* /* mario */)
 {
 	setState(State::Died);
 }
 
-void CHammerBro::kickFromBottom(CMario* mario)
+void CHammerBro::kickFromBottom(CMario* /* mario */)
 {
 	setState(State::Died);
 }
@@ -952,7 +966,7 @@ void CSpinny::kickFromTop(CMario* mario)
 	mario->reciveDamage();
 }
 
-void CSpinny::kickFromBottom(CMario* mario)
+void CSpinny::kickFromBottom(CMario* /* mario */)
 {
 	setState(State::Died);
 }
@@ -1032,12 +1046,12 @@ void CLakity::update(int delta_time)
 	}
 }
 
-void CLakity::kickFromTop(CMario* mario)
+void CLakity::kickFromTop(CMario* /* mario */)
 {
 	setState(State::Died);
 }
 
-void CLakity::kickFromBottom(CMario* mario)
+void CLakity::kickFromBottom(CMario* /* mario */)
 {
 	setState(State::Died);
 }
@@ -1135,12 +1149,12 @@ void CCheepCheep::update(int delta_time)
 
 }
 
-void CCheepCheep::kickFromTop(CMario* mario)
+void CCheepCheep::kickFromTop(CMario* /* mario */)
 {
 	setState(State::Died);
 }
 
-void CCheepCheep::kickFromBottom(CMario* mario)
+void CCheepCheep::kickFromBottom(CMario* /* mario */)
 {
 	setState(State::Died);
 }
@@ -1232,6 +1246,8 @@ void CBlooper::update(int delta_time)
 				enterState(State::Zig);
 			break;
 		}
+		case (CBlooper::Died):
+			break;
 		}
 		move(delta_time*m_speed);
 		m_animator.update(delta_time);
@@ -1249,7 +1265,7 @@ void CBlooper::kickFromTop(CMario* mario)
 	mario->reciveDamage();
 }
 
-void CBlooper::kickFromBottom(CMario* mario)
+void CBlooper::kickFromBottom(CMario* /* mario */)
 {
 	enterState(State::Died);
 }
@@ -1307,12 +1323,12 @@ void CBulletBill::update(int delta_time)
 	}
 }
 
-void CBulletBill::kickFromTop(CMario* mario)
+void CBulletBill::kickFromTop(CMario* /* mario */)
 {
 	setState(State::Died);
 }
 
-void CBulletBill::kickFromBottom(CMario* mario)
+void CBulletBill::kickFromBottom(CMario* /* mario */)
 {
 	setState(State::Died);
 }
@@ -1365,7 +1381,7 @@ void CPiranhaPlant::kickFromTop(CMario* mario)
 		mario->reciveDamage();
 }
 
-void CPiranhaPlant::kickFromBottom(CMario* mario)
+void CPiranhaPlant::kickFromBottom(CMario* /* mario */)
 {
 	getParent()->removeObject(this);
 	addScoreToPlayer(800);
@@ -1383,7 +1399,7 @@ void CPiranhaPlant::touchSide(CMario* mario)
 		mario->reciveDamage();
 }
 
-void CPiranhaPlant::fired(CMario* mario)
+void CPiranhaPlant::fired(CMario* /* mario */)
 {
 	getParent()->removeObject(this);
 	addScoreToPlayer(800);
@@ -1409,7 +1425,6 @@ void CPiranhaPlant::update(int delta_time)
 	if (m_timer < period_time) //None
 	{
 		//too close to mario ===> no appear
-		static const int distance = 20;
 		if ((mario()->getBounds().center() - getBounds().center()).length() < 100)
 			hideInTube();
 		height = 0;
@@ -1467,7 +1482,7 @@ void CPodoboo::kickFromTop(CMario* mario)
 	mario->reciveDamage();
 }
 
-void CPodoboo::kickFromBottom(CMario* mario)
+void CPodoboo::kickFromBottom(CMario* /* mario */)
 {
 	//nothing
 }
@@ -1482,7 +1497,7 @@ void CPodoboo::touchSide(CMario* mario)
 	mario->reciveDamage();
 }
 
-void CPodoboo::fired(CMario* mario)
+void CPodoboo::fired(CMario* /* mario */)
 {
 	//nothing
 }
@@ -1925,7 +1940,7 @@ void CBowser::kickFromTop(CMario* mario)
 	mario->reciveDamage();
 }
 
-void CBowser::kickFromBottom(CMario* mario)
+void CBowser::kickFromBottom(CMario* /* mario */)
 {
 	m_lives--;
 	if (m_lives < 0)

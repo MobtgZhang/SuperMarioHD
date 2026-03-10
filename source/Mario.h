@@ -32,10 +32,10 @@ enum class MarioRank;
 class IMarioState
 {
  public:
-	 ~IMarioState() = default;
+	 virtual ~IMarioState() = default;
 	 virtual void onEnter() {};
 	 virtual void onLeave() {};
-	 virtual void update(int delta_time) {};
+	 virtual void update(int) {};
 	 void setMario(CMario* mario);
 protected:
 	 CMario* mario();

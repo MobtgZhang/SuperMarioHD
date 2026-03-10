@@ -387,8 +387,8 @@ sf::Keyboard::Key CInputManager::toKey(const std::string& str)
 	if (str.length() == 1 && str[0] >= 'A' && str[0] <= 'Z')
 		return static_cast<sf::Keyboard::Key>(str[0] - 65);
 
-		static const std::map<std::string, sf::Keyboard::Key> key_map =
-		{
+	static const std::map<std::string, sf::Keyboard::Key> key_map =
+	{
 		{ "Left", sf::Keyboard::Left },
 		{ "Right", sf::Keyboard::Right },
 		{ "Up", sf::Keyboard::Up },
@@ -397,10 +397,11 @@ sf::Keyboard::Key CInputManager::toKey(const std::string& str)
 		{ "LShift", sf::Keyboard::LShift },
 		{ "Enter", sf::Keyboard::Enter },
 		{ "Return", sf::Keyboard::Return },
-		};
+	};
 
-		if (key_map.find(str) != key_map.end())
-			return key_map.at(str);
+	if (key_map.find(str) != key_map.end())
+		return key_map.at(str);
+	return sf::Keyboard::Unknown;
 }
 
 void CInputManager::setupButton(const std::string& button, const std::vector<std::string>& keys)
@@ -436,7 +437,7 @@ void CInputManager::setupButton(const std::string& button, const std::vector<std
 	}
 }
 
-void CInputManager::update(int delta_time)
+void CInputManager::update(int /* delta_time */)
 {
     std::swap(m_keys_now_ptr, m_keys_prev_ptr);
 	for (auto& key : *m_keys_now_ptr)
@@ -560,13 +561,13 @@ void CGameObject::setProperty(const std::string& name, const Property& property)
 {
     m_properties[name] = property;
     onPropertySet(name);
-};
+}
 
 Property CGameObject::getProperty(const std::string& name) const
 {
     onPropertyGet(name);
     return const_cast<CGameObject*>(this)->m_properties[name];
-};
+}
 
 void CGameObject::disable()
 {
@@ -692,7 +693,7 @@ void CGameObject::onPropertySet(const std::string& name)
 
 }
 
-void CGameObject::onPropertyGet(const std::string& name) const
+void CGameObject::onPropertyGet(const std::string& /* name */) const
 {
 
 }
@@ -1005,7 +1006,7 @@ bool CSpriteSheet::empty() const
 
 void CSpriteSheet::setSpriteIndex(int index)
 {
-    assert(index >= 0 && index < m_sprites.size());
+    assert(index >= 0 && static_cast<size_t>(index) < m_sprites.size());
     m_current_sprite = &m_sprites[index];
 }
 sf::Sprite* CSpriteSheet::currentSprite()
@@ -1046,14 +1047,14 @@ void CSpriteSheet::draw(sf::RenderWindow* wnd)
 		case(AnimType::forward_stop):
 		{
 			int current_slide = int(m_index);
-			if (current_slide < m_sprites.size())
+			if (static_cast<size_t>(current_slide) < m_sprites.size())
 				setSpriteIndex(current_slide);
 			break;
 		}
 		case(AnimType::forward):
 		{
 			int current_slide = int(m_index);
-			if (current_slide < m_sprites.size())
+			if (static_cast<size_t>(current_slide) < m_sprites.size())
 				setSpriteIndex(current_slide);
 			else
 				return;
@@ -1078,7 +1079,7 @@ void CSpriteSheet::setOrigin(const Vector& pos)
 
 sf::Sprite&  CSpriteSheet::operator[](int index)
 {
-    assert(index >= 0 && index < m_sprites.size());
+    assert(index >= 0 && static_cast<size_t>(index) < m_sprites.size());
     return m_sprites[index];
 }
 

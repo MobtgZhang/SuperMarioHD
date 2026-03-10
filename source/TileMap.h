@@ -71,7 +71,7 @@ public:
 	void loadFromString(std::map<char, T> dictionary, const std::string& str)
 	{
 		clear();
-		assert(width()*height() == str.length());
+		assert(static_cast<size_t>(width()*height()) == str.length());
 		int i = 0;
 		for (size_t y = 0; y < height(); ++y)
 			for (size_t x = 0; x < width(); ++x)
@@ -82,7 +82,7 @@ public:
 
 		clear();
 
-		assert(width()*height() == str.length());
+		assert(static_cast<size_t>(width()*height()) == str.length());
 		int i = 0;
 		for (int y = 0; y < height(); ++y)
 			for (int x = 0; x < width(); ++x)

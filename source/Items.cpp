@@ -29,7 +29,6 @@ void CMoveablePlatform::update(int delta_time)
 	{
 	  case(PlatformType::elevator):
 	  {
-		  static const int bottom = getParent()->findObjectByType<CBlocks>()->height();
 		  if (m_speed.y > 0 && getPosition().y > m_bottom)
 			  setPosition({ m_center.x,-16.f });
 		  if (m_speed.y < 0 && getPosition().y < 0)
@@ -47,8 +46,11 @@ void CMoveablePlatform::update(int delta_time)
 		  m_speed += k*m_orientation*m_acceleration*delta_time;
 		  break;
 	  }
+	  case(PlatformType::skate):
+	  case(PlatformType::no_init):
+		  break;
 	}
- 
+
 	move(m_speed*delta_time);
 }
 
@@ -98,7 +100,9 @@ void CMoveablePlatform::start()
 		  m_speed = Vector::zero;
 		  break;
 	  }
-	} 
+	  case(PlatformType::no_init):
+		  break;
+	}
 	if (getProperty("Phase").asInt() != 0)
 		m_speed = -m_speed;
 }
@@ -107,7 +111,7 @@ void CMoveablePlatform::collsionResponse(CMario* mario, ECollisionTag& collision
 {
  	if (m_platform_type == PlatformType::elevator)
     {
-	 	if (mario->getSpeed().y >= 0 && getBounds().top() > abs(getBounds().top() - mario->getBounds().bottom()) < 8)
+	 	if (mario->getSpeed().y >= 0 && abs(getBounds().top() - mario->getBounds().bottom()) < 8)
 	 		CPlatform::collsionResponse(mario, collision_tag, delta_time);
  	}
 	else
@@ -350,7 +354,7 @@ void CJumper::onActivated()
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------
-CLadder::CLadder(const Vector& pos, CMario* mario)
+CLadder::CLadder(const Vector& pos, CMario* /* mario */)
 {
 	setBounds({ pos.x + 10.f, 0.f, 10.f,pos.y + 32.f });
 	m_sprite.setTexture(*MarioGame().textureManager().get("Items"));
@@ -484,7 +488,7 @@ void CLevelPortal::cameBackFromSublevel()
 	MarioGame().unloadSubLevel();
 }
 
-void CLevelPortal::update(int delta_time)  
+void CLevelPortal::update(int /* delta_time */)  
 {	
      if (!m_used && getBounds().isContain(m_mario->getBounds()) &&
         (m_direction == Vector::zero || m_mario->getInputDirection() == m_direction) &&
@@ -647,6 +651,9 @@ void CEndLevelKey::enterState(State state)
 				m_delay_timer = 5000;
 				break;
 			}
+			case(State::play):
+			case(State::bowser_fall):
+				break;
 		  }
 }
 
@@ -732,6 +739,8 @@ void CEndLevelKey::update(int delta_time)
 			  }
 			  break;
 		  }
+		  case(State::bowser_fall):
+			  break;
 		  }
 }
 //-------------------------------------------------------------------------------------------------------------
@@ -796,7 +805,7 @@ void CTrigger::onActivated()
 	setSize({ getProperty("width").asFloat(),getProperty("height").asFloat() });
 }
 
-void CTrigger::update(int delta_time)
+void CTrigger::update(int /* delta_time */)
 {
 	if (!m_trigered && getBounds().isContain(m_mario->getBounds()))
 	{
